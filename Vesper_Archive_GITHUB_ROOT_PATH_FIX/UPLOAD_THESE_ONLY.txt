@@ -1,0 +1,1 @@
+Upload ONLY these 7 HTML files to the root of your GitHub repository and allow GitHub to replace the existing files. Do not re-upload images or audio.
