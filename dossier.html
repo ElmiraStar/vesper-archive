@@ -1,0 +1,507 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#111513"><title>Primary Dossiers | Vesper Archive</title><style>
+		@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Libre+Baskerville:wght@400;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+		:root {
+			--ink: #111513;
+			--ink-soft: #18201e;
+			--paper: #e8e3d7;
+			--paper-muted: #b6b4a9;
+			--line: rgba(232, 227, 215, .19);
+			--line-dark: rgba(17, 21, 19, .17);
+			--copper: #d18755;
+			--copper-bright: #efa873;
+			--sage: #839b85;
+			--fog: #c7d1c5;
+			--mono: 'DM Mono', monospace;
+			--display: 'Libre Baskerville', Georgia, serif;
+			--sans: 'Space Grotesk', sans-serif;
+		}
+
+		* { box-sizing: border-box; }
+		html { scroll-behavior: smooth; }
+		body {
+			margin: 0;
+			color: var(--paper);
+			background: var(--ink);
+			font-family: var(--sans);
+			overflow-x: hidden;
+		}
+		body::before {
+			content: '';
+			position: fixed;
+			inset: 0;
+			z-index: -1;
+			opacity: .28;
+			pointer-events: none;
+			background-image: linear-gradient(rgba(232, 227, 215, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(232, 227, 215, .035) 1px, transparent 1px);
+			background-size: 44px 44px;
+			mask-image: linear-gradient(to bottom, black, transparent 80%);
+		}
+		a { color: inherit; text-decoration: none; }
+		button { font: inherit; }
+		img { display: block; max-width: 100%; }
+		.mono { font-family: var(--mono); text-transform: uppercase; letter-spacing: .14em; font-size: .68rem; }
+
+		.topbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			z-index: 30;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 76px;
+			padding: 0 5vw;
+			border-bottom: 1px solid var(--line);
+			background: rgba(17, 21, 19, .84);
+			backdrop-filter: blur(15px);
+		}
+		.brand { display: flex; gap: 13px; align-items: center; font-weight: 600; letter-spacing: .05em; }
+		.brand-mark { width: 26px; height: 26px; border: 1px solid var(--copper); display: grid; place-items: center; color: var(--copper-bright); transform: rotate(45deg); }
+		.brand-mark span { transform: rotate(-45deg); font-family: var(--display); }
+		.nav { display: flex; align-items: center; gap: 22px; min-width: 0; }
+		.nav a { color: var(--paper-muted); transition: color .2s ease; }
+		.nav a:hover, .nav a.active { color: var(--paper); }
+		.status { color: var(--sage); display: flex; gap: 9px; align-items: center; }
+		.status::before { content: ''; width: 6px; height: 6px; background: var(--copper); border-radius: 50%; box-shadow: 0 0 12px var(--copper); }
+
+		main { padding-top: 76px; }
+		section { padding: 8vw 8vw; position: relative; }
+		.eyebrow { color: var(--copper-bright); margin-bottom: 22px; }
+		h1, h2, h3, p { margin-top: 0; }
+		h1, h2, h3 { font-family: var(--display); font-weight: 400; line-height: 1.08; }
+		h1 { font-size: clamp(3.4rem, 8vw, 8.4rem); letter-spacing: -.06em; max-width: 960px; margin-bottom: 30px; }
+		h2 { font-size: clamp(2.3rem, 5vw, 5.2rem); letter-spacing: -.05em; }
+		h3 { font-size: 1.7rem; }
+		.lede { max-width: 570px; color: #d4d2c8; line-height: 1.8; font-size: 1.02rem; text-shadow: 0 1px 22px rgba(0,0,0,.8); }
+
+		#terminal {
+			min-height: calc(100vh - 76px);
+			display: flex;
+			align-items: center;
+			overflow: hidden;
+			background:
+				linear-gradient(90deg, rgba(17,21,19,.94) 0%, rgba(17,21,19,.78) 43%, rgba(17,21,19,.28) 73%, rgba(17,21,19,.48) 100%),
+				linear-gradient(0deg, rgba(17,21,19,.76), transparent 58%),
+				url('assets/ash-meridian-cover.png') center / cover no-repeat;
+		}
+		#terminal::after { content: '01'; position: absolute; right: 7vw; bottom: 5vw; color: rgba(232, 227, 215, .1); font: 14rem var(--display); letter-spacing: -.12em; }
+		.terminal-layout { width: 100%; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); gap: 9vw; align-items: center; }
+		.title-rule { width: 90px; height: 1px; background: var(--copper); margin: 38px 0 25px; }
+		.enter-link { display: inline-flex; align-items: center; gap: 16px; margin-top: 30px; color: var(--paper); }
+		.enter-link span:last-child { color: var(--copper-bright); font-size: 1.4rem; transition: transform .2s; }
+		.enter-link:hover span:last-child { transform: translateX(7px); }
+		.signal { min-height: 330px; border: 1px solid rgba(232,227,215,.28); position: relative; padding: 24px; background: rgba(17,21,19,.38); backdrop-filter: blur(7px); overflow: hidden; }
+		.signal::before { content: ''; position: absolute; inset: 14px; border: 1px solid var(--line); clip-path: polygon(0 0, 100% 0, 100% 18%, 92% 18%, 92% 82%, 100% 82%, 100% 100%, 0 100%); z-index: 2; }
+		.signal-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+		.signal-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(17,21,19,.16), rgba(17,21,19,.26) 42%, rgba(17,21,19,.74)); z-index: 1; }
+		.signal-header { position: absolute; top: 24px; left: 24px; z-index: 3; color: var(--sage); text-shadow: 0 1px 8px #000; }
+		.signal-label { position: absolute; left: 24px; bottom: 22px; color: var(--paper-muted); z-index: 3; text-shadow: 0 1px 8px #000; }
+
+		.section-head { display: flex; justify-content: space-between; align-items: end; gap: 30px; border-bottom: 1px solid var(--line); padding-bottom: 28px; margin-bottom: 42px; }
+		.section-head h2 { margin-bottom: 0; }
+		.section-head p { color: var(--paper-muted); max-width: 400px; line-height: 1.7; margin-bottom: 0; }
+
+		#roster { background: var(--paper); color: var(--ink); }
+		#roster .section-head { border-color: var(--line-dark); }
+		#roster .eyebrow { color: #a3572d; }
+		.faction-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+		.faction {
+			--scene: none;
+			min-height: 360px;
+			padding: 27px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			position: relative;
+			overflow: hidden;
+			isolation: isolate;
+			color: var(--paper);
+			border: 1px solid rgba(17,21,19,.22);
+			background: var(--ink);
+		}
+		.faction::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -2;
+			background-image: var(--scene);
+			background-position: center;
+			background-size: cover;
+			transition: transform .45s ease, filter .45s ease;
+		}
+		.faction::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			z-index: -1;
+			background: linear-gradient(180deg, rgba(10,13,12,.25), rgba(10,13,12,.55) 48%, rgba(10,13,12,.93) 100%);
+			transition: background .3s ease;
+		}
+		.faction:hover::before, .faction.selected::before { transform: scale(1.045); filter: saturate(1.08); }
+		.faction:hover::after, .faction.selected::after { background: linear-gradient(180deg, rgba(10,13,12,.14), rgba(10,13,12,.45) 48%, rgba(10,13,12,.9) 100%); }
+		.faction-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+		.faction-emblem { width: 66px; height: 66px; object-fit: cover; border: 1px solid rgba(232,227,215,.48); background: rgba(17,21,19,.55); padding: 5px; backdrop-filter: blur(4px); }
+		.faction-index { color: var(--copper-bright); text-shadow: 0 1px 10px #000; }
+		.faction h3 { margin: 24px 0 9px; font-size: 1.75rem; text-shadow: 0 2px 18px rgba(0,0,0,.88); }
+		.faction-meta { color: #d1d6ce; font: .66rem var(--mono); text-transform: uppercase; letter-spacing: .1em; }
+		.faction-arrow { align-self: flex-end; color: var(--copper-bright); font-size: 1.4rem; }
+
+		#dossier { padding-top: 10vw; }
+		.dossier-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 6vw; align-items: start; }
+		.portrait { position: relative; overflow: hidden; background: #151b18; border: 1px solid var(--line); aspect-ratio: 3 / 2; }
+		.portrait::before { content: 'ARCHIVE / ACTIVE SUBJECT'; position: absolute; z-index: 3; top: 20px; left: 20px; color: var(--sage); font: .62rem var(--mono); text-transform: uppercase; letter-spacing: .13em; text-shadow: 0 1px 8px #000; }
+		.portrait-image { width: 100%; height: 100%; object-fit: cover; object-position: center; transition: opacity .24s ease; }
+		.portrait-shade { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 52%, rgba(8,10,9,.88)); pointer-events: none; }
+		.portrait-caption { position: absolute; z-index: 2; bottom: 18px; left: 20px; right: 20px; display: flex; justify-content: space-between; gap: 15px; color: #d5d5ca; text-shadow: 0 1px 9px #000; }
+		.subject-emblem { position: absolute; z-index: 2; top: 18px; right: 18px; width: 64px; height: 64px; object-fit: cover; border: 1px solid rgba(232,227,215,.45); padding: 4px; background: rgba(17,21,19,.58); backdrop-filter: blur(5px); }
+		.dossier-copy h2 { margin-bottom: 15px; }
+		.alias { color: var(--copper-bright); margin-bottom: 32px; }
+		.quote { font: 1.25rem/1.6 var(--display); color: var(--fog); border-left: 2px solid var(--copper); padding-left: 20px; margin: 0 0 38px; }
+		.stats { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); margin-bottom: 34px; }
+		.stat { padding: 17px 0; border-bottom: 1px solid var(--line); }
+		.stat:nth-child(odd) { margin-right: 22px; }
+		.stat:nth-child(even) { padding-left: 22px; border-left: 1px solid var(--line); }
+		.stat:nth-last-child(-n+2) { border-bottom: 0; }
+		.stat-label { color: var(--paper-muted); display: block; margin-bottom: 7px; }
+		.stat-value { color: var(--paper); }
+		.dossier-copy .body-copy { color: var(--paper-muted); line-height: 1.8; max-width: 620px; }
+		.archive-tabs { display: flex; gap: 12px; margin-top: 34px; flex-wrap: wrap; }
+		.tab { cursor: pointer; color: var(--paper-muted); background: transparent; border: 1px solid var(--line); padding: 11px 15px; font: .64rem var(--mono); text-transform: uppercase; letter-spacing: .11em; }
+		.tab:hover, .tab.active { color: var(--ink); background: var(--copper-bright); border-color: var(--copper-bright); }
+		.tab-panel { display: none; margin-top: 24px; color: var(--paper-muted); line-height: 1.7; min-height: 52px; }
+		.tab-panel.active { display: block; }
+		.faction-scene { grid-column: 1 / -1; margin: 36px 0 0; position: relative; border: 1px solid var(--line); overflow: hidden; background: #151b18; }
+		.faction-scene img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+		.faction-scene figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 24px; background: linear-gradient(transparent, rgba(8,10,9,.93)); display: flex; justify-content: space-between; align-items: end; gap: 20px; }
+		.faction-scene strong { font: 1.5rem var(--display); font-weight: 400; }
+		.faction-scene span { color: var(--paper-muted); }
+
+
+		/* Key figures */
+		#figures { background: #111513; }
+		.figure-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+		.figure-card {
+			border: 1px solid var(--line);
+			background: #171d1a;
+			position: relative;
+			overflow: hidden;
+			cursor: zoom-in;
+			min-width: 0;
+		}
+		.figure-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: transform .35s ease, filter .35s ease; }
+		.figure-card:hover img { transform: scale(1.025); filter: saturate(1.05); }
+		.figure-info { padding: 22px 23px 24px; border-top: 1px solid var(--line); }
+		.figure-info h3 { font-size: 1.45rem; margin-bottom: 8px; }
+		.figure-role { color: var(--copper-bright); display: block; margin-bottom: 12px; }
+		.figure-info p { color: var(--paper-muted); line-height: 1.65; margin: 0; font-size: .92rem; }
+		.figure-index { position: absolute; top: 15px; left: 15px; z-index: 2; padding: 8px 10px; background: rgba(17,21,19,.76); border: 1px solid rgba(232,227,215,.28); color: var(--fog); backdrop-filter: blur(5px); }
+		.figure-card.ravel { border-color: rgba(209,135,85,.45); }
+
+		/* Second Voice / main antagonist force */
+		#threats { background: #0d100f; overflow: hidden; }
+		#threats::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background: radial-gradient(circle at 80% 15%, rgba(199,209,197,.15), transparent 30%), repeating-linear-gradient(0deg, transparent 0 33px, rgba(232,227,215,.025) 34px); }
+		.threat-feature { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(300px, .75fr); border: 1px solid var(--line); background: #141916; margin-bottom: 54px; position: relative; }
+		.threat-feature-image { position: relative; min-height: 460px; cursor: zoom-in; overflow: hidden; }
+		.threat-feature-image img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; }
+		.threat-feature-image::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 55%, rgba(20,25,22,.74)); pointer-events: none; }
+		.threat-copy { padding: clamp(30px, 4vw, 58px); display: flex; flex-direction: column; justify-content: center; }
+		.threat-copy h3 { font-size: clamp(2rem, 4vw, 4rem); margin-bottom: 14px; }
+		.threat-tag { color: var(--copper-bright); margin-bottom: 24px; }
+		.threat-copy p { color: var(--paper-muted); line-height: 1.8; }
+		.threat-warning { border-left: 2px solid var(--copper); padding-left: 18px; color: var(--fog) !important; font-family: var(--display); font-size: 1.08rem; }
+		.subvocant-head { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 28px; }
+		.subvocant-head h3 { font-size: 2rem; margin: 0; }
+		.subvocant-head p { color: var(--paper-muted); max-width: 520px; line-height: 1.65; margin: 0; }
+		.enemy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+		.enemy-card { position: relative; overflow: hidden; border: 1px solid var(--line); background: #151a17; cursor: zoom-in; }
+		.enemy-card:last-child { grid-column: 1 / -1; }
+		.enemy-card img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; transition: transform .35s ease; }
+		.enemy-card:hover img { transform: scale(1.025); }
+		.enemy-copy { padding: 21px 23px 24px; border-top: 1px solid var(--line); }
+		.enemy-rank { color: var(--sage); display: block; margin-bottom: 10px; }
+		.enemy-copy h3 { margin-bottom: 9px; font-size: 1.45rem; }
+		.enemy-copy p { color: var(--paper-muted); line-height: 1.65; font-size: .92rem; margin: 0; }
+
+		/* Full-size dossier viewer */
+		.lightbox { position: fixed; inset: 0; z-index: 100; display: none; align-items: center; justify-content: center; padding: 3vw; background: rgba(5,7,6,.94); backdrop-filter: blur(10px); }
+		.lightbox.open { display: flex; }
+		.lightbox img { max-width: 94vw; max-height: 90vh; width: auto; height: auto; object-fit: contain; box-shadow: 0 18px 80px rgba(0,0,0,.5); border: 1px solid var(--line); }
+		.lightbox-close { position: fixed; top: 22px; right: 26px; z-index: 101; width: 46px; height: 46px; border: 1px solid var(--line); background: rgba(17,21,19,.86); color: var(--paper); cursor: pointer; font-size: 1.45rem; }
+		.lightbox-caption { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); background: rgba(17,21,19,.86); border: 1px solid var(--line); padding: 10px 16px; color: var(--paper-muted); white-space: nowrap; max-width: 85vw; overflow: hidden; text-overflow: ellipsis; }
+
+		#relics { background: #171d1a; }
+		.relic-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+		.relic-card { border: 1px solid var(--line); background: rgba(232,227,215,.035); overflow: hidden; }
+		.relic-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+		.relic-copy { padding: 24px; }
+		.relic-copy h3 { margin-bottom: 10px; font-size: 1.35rem; }
+		.relic-copy p { color: var(--paper-muted); line-height: 1.65; margin-bottom: 0; font-size: .93rem; }
+		.relic-owner { color: var(--copper-bright); display: block; margin-bottom: 12px; }
+
+		#chronicle { background: #d6d8ce; color: var(--ink); }
+		#chronicle .section-head { border-color: var(--line-dark); }
+		#chronicle .section-head p { color: #596158; }
+		.timeline { position: relative; max-width: 1080px; }
+		.timeline::before { content: ''; position: absolute; left: 9px; top: 0; bottom: 0; width: 1px; background: #9ba299; }
+		.event { display: grid; grid-template-columns: 105px minmax(0, 1fr); gap: 35px; padding: 0 0 54px; position: relative; }
+		.event::before { content: ''; width: 9px; height: 9px; position: absolute; left: 5px; top: 7px; background: var(--copper); border: 3px solid #d6d8ce; box-sizing: content-box; border-radius: 50%; }
+		.event time { padding-left: 34px; color: #777d72; }
+		.event-content { padding-left: 34px; }
+		.event-image { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; margin-bottom: 24px; border: 1px solid rgba(17,21,19,.18); }
+		.event h3 { font-size: 1.6rem; margin-bottom: 9px; }
+		.event p { color: #596158; line-height: 1.7; max-width: 720px; margin-bottom: 0; }
+
+		footer { padding: 32px 8vw; display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); color: var(--paper-muted); }
+		footer strong { color: var(--paper); font-weight: 500; }
+		.reveal { opacity: 1; transform: none; }
+		.reveal.visible { opacity: 1; transform: none; }
+
+
+
+		/* Archive audio */
+		.topbar-actions { display: flex; align-items: center; gap: 14px; flex: 0 0 auto; }
+		.audio-toggle {
+			appearance: none;
+			border: 1px solid var(--line);
+			background: rgba(17,21,19,.62);
+			color: var(--paper-muted);
+			padding: 9px 12px;
+			cursor: pointer;
+			transition: color .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease;
+			white-space: nowrap;
+		}
+		.audio-toggle:hover { color: var(--paper); border-color: rgba(232,227,215,.38); }
+		.audio-toggle[data-state="on"] { color: var(--copper-bright); border-color: rgba(209,135,85,.45); box-shadow: 0 0 18px rgba(209,135,85,.08); }
+		.audio-toggle[data-state="resume"] { color: var(--sage); border-color: rgba(131,155,133,.5); }
+		.audio-icon { display: inline-block; margin-right: 7px; transform-origin: center; }
+		.audio-toggle[data-state="on"] .audio-icon { animation: audioPulse 1.8s ease-in-out infinite; }
+		@keyframes audioPulse { 0%,100% { opacity: .55; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.08); } }
+
+		/* Personnel teaser */
+		#personnel-teaser { background: #111513; }
+		.personnel-teaser-card {
+			display: grid;
+			grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+			border: 1px solid var(--line);
+			background: #171d1a;
+			overflow: hidden;
+		}
+		.personnel-teaser-copy { padding: clamp(32px, 5vw, 70px); display: flex; flex-direction: column; justify-content: center; }
+		.personnel-teaser-copy h3 { font-size: clamp(2rem, 4vw, 4.2rem); margin-bottom: 18px; }
+		.personnel-teaser-copy p { color: var(--paper-muted); line-height: 1.8; max-width: 560px; }
+		.personnel-open {
+			display: inline-flex; width: fit-content; align-items: center; gap: 14px; margin-top: 14px;
+			border: 1px solid rgba(209,135,85,.5); padding: 13px 16px; color: var(--copper-bright);
+			transition: background .2s ease, color .2s ease, transform .2s ease;
+		}
+		.personnel-open:hover { background: var(--copper-bright); color: var(--ink); transform: translateY(-2px); }
+		.personnel-teaser-images { display: grid; grid-template-columns: repeat(3, 1fr); min-height: 430px; }
+		.personnel-teaser-images figure { margin: 0; position: relative; overflow: hidden; border-left: 1px solid var(--line); background: #0e1210; }
+		.personnel-teaser-images img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease, filter .45s ease; }
+		.personnel-teaser-images figure:hover img { transform: scale(1.04); filter: saturate(1.06); }
+		.personnel-teaser-images figure::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 50%, rgba(8,10,9,.83)); pointer-events: none; }
+		.personnel-teaser-images figcaption { position: absolute; z-index: 2; left: 16px; right: 16px; bottom: 15px; color: var(--paper); text-shadow: 0 2px 10px #000; }
+		.personnel-teaser-images .ravel-peek::before { content: 'FILE ??'; position: absolute; z-index: 3; top: 14px; left: 14px; padding: 7px 9px; background: rgba(17,21,19,.75); border: 1px solid rgba(209,135,85,.45); color: var(--copper-bright); font: .62rem var(--mono); letter-spacing: .12em; }
+
+		@media (max-width: 1150px) {
+			.nav { gap: 16px; }
+			.nav a { font-size: .61rem; }
+		}
+		@media (max-width: 920px) {
+			.topbar { height: 64px; padding: 0 6vw; }
+			.nav { gap: 13px; }
+			.nav a { font-size: .58rem; letter-spacing: .06em; }
+			.status { display: none; }
+			.topbar-actions { gap: 8px; }
+			.audio-toggle { padding: 8px 10px; font-size: .58rem; }
+			.personnel-teaser-card { grid-template-columns: 1fr; }
+			.personnel-teaser-images { min-height: 360px; }
+			main { padding-top: 64px; }
+			section { padding: 14vw 6vw; }
+			.terminal-layout, .dossier-grid { grid-template-columns: 1fr; gap: 48px; }
+			#terminal { min-height: calc(100vh - 64px); background-position: 62% center; }
+			#terminal::after { font-size: 9rem; }
+			.signal { min-height: 250px; max-width: 520px; }
+			.faction-list { grid-template-columns: 1fr; }
+			.faction { min-height: 330px; }
+			.faction-scene { grid-column: auto; }
+			.figure-grid, .enemy-grid { grid-template-columns: 1fr; }
+			.enemy-card:last-child { grid-column: auto; }
+			.threat-feature { grid-template-columns: 1fr; }
+			.threat-feature-image { min-height: 380px; }
+			.relic-grid { grid-template-columns: 1fr 1fr; }
+			.section-head { display: block; }
+			.section-head p { margin-top: 18px; }
+		}
+		@media (max-width: 620px) {
+			h1 { font-size: clamp(3rem, 17vw, 5rem); }
+			.brand { font-size: .8rem; }
+			.brand-mark { width: 22px; height: 22px; }
+			.nav { gap: 12px; }
+			.nav a:nth-child(2), .nav a:nth-child(3), .nav a:nth-child(6), .nav a:nth-child(7) { display: none; }
+			.brand { max-width: 31px; overflow: hidden; white-space: nowrap; flex: 0 0 31px; }
+			.audio-toggle { padding: 8px 9px; }
+			.audio-label { display: none; }
+			.audio-icon { margin-right: 0; }
+			.personnel-teaser-images { grid-template-columns: 1fr; min-height: auto; }
+			.personnel-teaser-images figure { height: 260px; border-left: 0; border-top: 1px solid var(--line); }
+			.faction { min-height: 280px; }
+			.stats { grid-template-columns: 1fr; }
+			.stat:nth-child(odd), .stat:nth-child(even) { margin-right: 0; padding-left: 0; border-left: 0; }
+			.stat:nth-last-child(2) { border-bottom: 1px solid var(--line); }
+			.relic-grid { grid-template-columns: 1fr; }
+			.subvocant-head { display: block; }
+			.subvocant-head p { margin-top: 14px; }
+			.threat-feature-image { min-height: 280px; }
+			.event { grid-template-columns: 1fr; gap: 10px; }
+			.event time { padding-left: 34px; }
+			.event-content { padding-left: 34px; }
+			.portrait-caption { flex-direction: column; gap: 5px; }
+			.subject-emblem { width: 52px; height: 52px; }
+			.faction-scene figcaption { position: static; background: #111513; align-items: start; flex-direction: column; }
+			footer { display: block; line-height: 2; }
+		}
+	
+		/* Multi-page archive additions */
+		.topbar-meta { display:flex; flex-direction:column; align-items:flex-end; gap:2px; line-height:1.1; }
+		.creator-link { color:var(--paper-muted); font-size:.57rem; letter-spacing:.10em; text-transform:uppercase; transition:color .2s ease; }
+		.creator-link:hover { color:var(--copper-bright); }
+		.archive-page-hero { padding: 150px 8vw 72px; border-bottom:1px solid var(--line); background:linear-gradient(180deg, rgba(17,21,19,.96), rgba(17,21,19,.88)); position:relative; overflow:hidden; }
+		.archive-page-hero::after { content:''; position:absolute; inset:0; pointer-events:none; background:radial-gradient(circle at 75% 20%, rgba(209,135,85,.10), transparent 38%), linear-gradient(90deg, transparent 0 66%, rgba(131,155,133,.035)); }
+		.archive-page-hero > * { position:relative; z-index:1; }
+		.archive-page-hero h1 { max-width:900px; margin:.18em 0 .25em; }
+		.archive-page-hero .lede { max-width:720px; }
+		.page-meta { display:flex; flex-wrap:wrap; gap:10px 22px; margin-top:28px; color:var(--sage); font-size:.67rem; text-transform:uppercase; letter-spacing:.12em; }
+		.archive-directory { padding:78px 8vw 110px; background:var(--paper); color:var(--ink); }
+		.archive-directory .section-head { border-color:rgba(17,21,19,.18); }
+		.archive-directory .section-head p { color:#5f665f; }
+		.directory-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-left:1px solid rgba(17,21,19,.18); border-top:1px solid rgba(17,21,19,.18); }
+		.directory-card { min-height:360px; padding:0; border-right:1px solid rgba(17,21,19,.18); border-bottom:1px solid rgba(17,21,19,.18); color:var(--ink); display:flex; flex-direction:column; transition:background .2s ease; overflow:hidden; }
+		.directory-card:hover { background:#ddd7ca; }
+		.directory-card img { width:100%; height:205px; object-fit:cover; filter:saturate(.78) contrast(1.04); }
+		.directory-card-copy { padding:24px 24px 28px; display:flex; flex-direction:column; flex:1; }
+		.directory-card .mono { color:#6c736c; font-size:.62rem; letter-spacing:.11em; text-transform:uppercase; }
+		.directory-card h3 { margin:8px 0 12px; font-size:1.55rem; }
+		.directory-card p { color:#565d56; line-height:1.65; margin:0 0 20px; }
+		.directory-card .open-record { margin-top:auto; color:#7e4e31; font-size:.65rem; text-transform:uppercase; letter-spacing:.12em; }
+		.archive-return { padding:58px 8vw 72px; border-top:1px solid var(--line); }
+		.archive-return .enter-link { margin-top:22px; }
+		.faction-detail-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; background:var(--line-dark); border:1px solid var(--line-dark); }
+		.faction-detail { background:#171c19; min-width:0; }
+		.faction-detail .scene { height:330px; position:relative; overflow:hidden; }
+		.faction-detail .scene > img:first-child { width:100%; height:100%; object-fit:cover; filter:saturate(.78) contrast(1.05); }
+		.faction-detail .scene::after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 38%,rgba(17,21,19,.9)); }
+		.faction-detail .emblem { position:absolute; right:22px; top:22px; z-index:2; width:68px; height:68px; object-fit:cover; border:1px solid rgba(232,227,215,.25); }
+		.faction-detail-copy { padding:30px; }
+		.faction-detail-copy h3 { font-size:2rem; margin:6px 0 10px; }
+		.faction-detail-copy p { color:var(--paper-muted); line-height:1.72; }
+		.faction-detail-copy .enter-link { margin-top:18px; }
+		.dossier-selector { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:1px; }
+		.dossier-select { background:#151a17; color:var(--paper-muted); padding:18px; border:0; text-align:left; cursor:pointer; font:inherit; transition:background .2s,color .2s; }
+		.dossier-select:hover,.dossier-select.active { background:#202620; color:var(--paper); }
+		.dossier-select span { display:block; color:var(--copper); font: .58rem var(--mono); letter-spacing:.12em; text-transform:uppercase; margin-bottom:7px; }
+		.dossier-select strong { font-family:var(--display); font-size:1.12rem; font-weight:500; }
+		.record-note { margin-top:28px; border:1px solid var(--line); padding:20px 22px; color:var(--paper-muted); line-height:1.7; }
+		.record-note strong { color:var(--paper); }
+		.card-lightbox { cursor:zoom-in; }
+		.category-footer-links { display:flex; flex-wrap:wrap; gap:12px 22px; margin-top:25px; }
+		.category-footer-links a { color:var(--copper-bright); font: .64rem var(--mono); text-transform:uppercase; letter-spacing:.1em; }
+		@media (max-width:1050px){ .directory-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.faction-detail-grid{grid-template-columns:1fr}.dossier-selector{grid-template-columns:repeat(2,minmax(0,1fr));}.topbar-meta{display:none;} }
+		@media (max-width:700px){ .archive-page-hero{padding:120px 7vw 58px}.archive-directory{padding:58px 7vw 80px}.directory-grid{grid-template-columns:1fr}.dossier-selector{grid-template-columns:1fr}.faction-detail .scene{height:260px}.directory-card{min-height:0}.directory-card img{height:190px} }
+</style></head><body><header class="topbar">
+        <a class="brand" href="index.html"><span class="brand-mark"><span>V</span></span> VESPER ARCHIVE</a>
+        <nav class="nav mono" aria-label="Primary navigation"><a class="" href="index.html">Terminal</a><a class="" href="factions.html">Factions</a><a class="active" href="dossier.html">Dossier</a><a class="" href="figures.html">Personnel</a><a class="" href="threats.html">Threats</a><a class="" href="relics.html">Relics</a><a class="" href="chronicle.html">Chronicle</a></nav>
+        <div class="topbar-actions">
+            <button id="audio-toggle" class="audio-toggle mono" type="button" data-state="off" aria-pressed="false" title="Frozen Sun Archive"><span class="audio-icon">♫</span><span class="audio-label">AUDIO: OFF</span></button>
+            <div class="topbar-meta"><div class="status mono">Dossier system online</div><a class="creator-link mono" href="https://ooc.ai/profile/rItwDAHOTY-GGENNwD3_UZfL6l6CKc6?profileTab=work" target="_blank" rel="noopener noreferrer">Creator / OOC.AI ↗</a></div>
+        </div>
+    </header>
+    <audio id="bg-audio" src="audio/frozen-sun-archive.mp3" preload="metadata" loop></audio><main><section class="archive-page-hero"><div class="eyebrow mono">Vesper Archive / primary dossiers</div><h1>Four primary records.</h1><p class="lede">Select a subject. The archive will load the surviving field notes, relations and warnings tied to their faction record.</p><div class="page-meta mono"><span>Files 01–04</span><span>Interactive dossier</span><span>Cycle 47</span></div></section><section style="padding-bottom:0"><div class="dossier-selector"><button class="dossier-select active" data-select="lighthouse"><span>File 01 / Court</span><strong>Andamar Lilouwel</strong></button><button class="dossier-select" data-select="tide"><span>File 02 / Saltbound</span><strong>Mara Lilianna</strong></button><button class="dossier-select" data-select="glass"><span>File 03 / Choir</span><strong>Wolf Glass</strong></button><button class="dossier-select" data-select="unbound"><span>File 04 / Unbound</span><strong>Oal Takezumeki</strong></button></div></section><section id="dossier">
+<div class="dossier-grid">
+<div class="portrait reveal">
+<img alt="Andamar Lilouwel" class="portrait-image" id="dossier-image" src="assets/andamar.png"/>
+<div class="portrait-shade"></div>
+<img alt="Lighthouse Court emblem" class="subject-emblem" id="dossier-emblem" src="assets/lighthouse-emblem.png"/>
+<div class="portrait-caption mono"><span id="portrait-label">File 01 / Andamar Lilouwel</span><span id="portrait-class">Class: Keeper</span></div>
+</div>
+<article class="dossier-copy reveal">
+<div class="eyebrow mono">Active dossier / <span id="dossier-faction">The Lighthouse Court</span></div>
+<h2 id="dossier-name">Andamar Lilouwel</h2>
+<div class="alias mono" id="dossier-role">The one who keeps the flame</div>
+<blockquote class="quote" id="dossier-quote">“A light is not a promise. It is a responsibility.”</blockquote>
+<div class="stats">
+<div class="stat"><span class="stat-label mono">Age</span><span class="stat-value" id="stat-age">31</span></div>
+<div class="stat"><span class="stat-label mono">Origin</span><span class="stat-value" id="stat-origin">North Meridian</span></div>
+<div class="stat"><span class="stat-label mono">Known for</span><span class="stat-value" id="stat-known">Carrying the dawn</span></div>
+<div class="stat"><span class="stat-label mono">Threat index</span><span class="stat-value" id="stat-threat">Unmeasured</span></div>
+</div>
+<p class="body-copy" id="dossier-copy">Andamar has guarded the Court's impossible lighthouse for nine years. He speaks to the dead through its lens and insists the voices are not asking to be rescued. The archive cannot verify the claim.</p>
+<div class="archive-tabs" role="tablist"><button class="tab active" data-tab="notes">Field notes</button><button class="tab" data-tab="relation">Relations</button><button class="tab" data-tab="warning">Warning</button></div>
+<div class="tab-panel active" id="notes">Last transmission: “The beam moved tonight. Not across the water. Down.”</div>
+<div class="tab-panel" id="relation">Trusts the Saltbound navigator. Has never entered a Glass Choir cathedral.</div>
+<div class="tab-panel" id="warning">Do not let the subject near an unlit mirror.</div>
+</article>
+<figure class="faction-scene reveal">
+<img alt="The Lighthouse Court" id="dossier-scene" src="assets/lighthouse-court.png"/>
+<figcaption><strong id="scene-title">The Lighthouse Court</strong><span class="mono" id="scene-caption">Keepers of the last bright thing</span></figcaption>
+</figure>
+</div>
+</section><section class="archive-return"><div class="eyebrow mono">Extended records</div><h2>Primary files are only the beginning.</h2><div class="category-footer-links"><a href="figures.html">Open personnel archive →</a><a href="factions.html">Return to factions →</a></div></section></main><div class="lightbox" id="lightbox" aria-hidden="true"><button class="lightbox-close" id="lightbox-close" type="button" aria-label="Close image">×</button><img id="lightbox-image" src="" alt="Expanded archive image"><div class="lightbox-caption mono" id="lightbox-caption"></div></div><footer><strong>VESPER ARCHIVE</strong><span class="mono">Primary dossiers / files 01–04</span></footer><script>
+		// Archive image viewer
+		const lightbox = document.getElementById('lightbox');
+		const lightboxImage = document.getElementById('lightbox-image');
+		const lightboxCaption = document.getElementById('lightbox-caption');
+		const closeLightbox = () => {
+			if (!lightbox) return;
+			lightbox.classList.remove('open'); lightbox.setAttribute('aria-hidden','true');
+			if (lightboxImage) lightboxImage.src=''; document.body.style.overflow='';
+		};
+		document.querySelectorAll('[data-lightbox]').forEach(item => item.addEventListener('click', event => {
+			if (event.target.closest('a,button')) return;
+			if (!lightbox || !lightboxImage) return;
+			lightboxImage.src=item.dataset.lightbox; lightboxImage.alt=item.dataset.caption || 'Expanded archive image';
+			if (lightboxCaption) lightboxCaption.textContent=item.dataset.caption || '';
+			lightbox.classList.add('open'); lightbox.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+		}));
+		const lbClose=document.getElementById('lightbox-close'); if(lbClose) lbClose.addEventListener('click',closeLightbox);
+		if(lightbox) lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox();});
+		document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
+
+		// Background score — Frozen Sun Archive
+		(() => {
+			const audio=document.getElementById('bg-audio'); const toggle=document.getElementById('audio-toggle');
+			if(!audio||!toggle)return;
+			const label=toggle.querySelector('.audio-label'); const ENABLED_KEY='vesperAudioEnabled'; const TIME_KEY='vesperAudioTime'; const VOLUME=.35;
+			const getStore=k=>{try{return localStorage.getItem(k)}catch(_){return null}};
+			const setStore=(k,v)=>{try{localStorage.setItem(k,v)}catch(_){}};
+			const setState=s=>{toggle.dataset.state=s; toggle.setAttribute('aria-pressed',s==='on'?'true':'false'); if(label) label.textContent=s==='on'?'AUDIO: ON':s==='loading'?'AUDIO: LOADING':s==='error'?'AUDIO: ERROR':s==='resume'?'AUDIO: RESUME':'AUDIO: OFF';};
+			audio.volume=VOLUME;
+			const restore=()=>{const t=parseFloat(getStore(TIME_KEY)); if(Number.isFinite(t)&&Number.isFinite(audio.duration)&&audio.duration>0){try{audio.currentTime=t%audio.duration}catch(_){}}};
+			if(audio.readyState>=1)restore(); else audio.addEventListener('loadedmetadata',restore,{once:true});
+			toggle.addEventListener('click',async()=>{
+				if(!audio.paused){audio.pause();setStore(ENABLED_KEY,'false');setState('off');return;}
+				try{setState('loading');audio.muted=false;audio.volume=VOLUME;if(audio.readyState===0)audio.load();await audio.play();setStore(ENABLED_KEY,'true');setState('on');}
+				catch(err){console.error('Vesper audio could not start:',err);setState('error');}
+			});
+			audio.addEventListener('play',()=>setState('on'));
+			audio.addEventListener('pause',()=>{if(!audio.ended)setState(getStore(ENABLED_KEY)==='true'?'resume':'off');});
+			audio.addEventListener('error',()=>setState('error'));
+			const save=()=>{if(Number.isFinite(audio.currentTime))setStore(TIME_KEY,String(audio.currentTime));};
+			window.addEventListener('beforeunload',save); window.setInterval(save,1500);
+			setState(getStore(ENABLED_KEY)==='true'?'resume':'off');
+		})();
+
+
+		const dossiers = {
+			lighthouse:{faction:'The Lighthouse Court',name:'Andamar Lilouwel',role:'The one who keeps the flame',quote:'“A light is not a promise. It is a responsibility.”',age:'31',origin:'North Meridian',known:'Carrying the dawn',threat:'Unmeasured',className:'Keeper',copy:"Andamar has guarded the Court's impossible lighthouse for nine years. He speaks to the dead through its lens and insists the voices are not asking to be rescued. The archive cannot verify the claim.",label:'File 01 / Andamar Lilouwel',image:'assets/andamar.png',emblem:'assets/lighthouse-emblem.png',scene:'assets/lighthouse-court.png',sceneCaption:'Keepers of the last bright thing',notes:'Last transmission: “The beam moved tonight. Not across the water. Down.”',relation:'Trusts the Saltbound navigator. Has never entered a Glass Choir cathedral.',warning:'Do not let the subject near an unlit mirror.'},
+			tide:{faction:'The Saltbound',name:'Mara Lilianna',role:'Navigator of the buried fleet',quote:'“The sea did not leave us. We left it first.”',age:'38',origin:'The Underwake',known:'Mapping drowned roads',threat:'Severe',className:'Navigator',copy:'Mara pilots a convoy through tunnels older than the Meridian. She carries a jar of seawater that rises toward the moon, even beneath six miles of stone.',label:'File 02 / Mara Lilianna',image:'assets/mara.png',emblem:'assets/saltbound-emblem.png',scene:'assets/saltbound-fleet.png',sceneCaption:'A fleet beneath the earth',notes:'Pilots a convoy through tunnels older than the Meridian.',relation:'No surviving relations entry.',warning:'Carries seawater that rises toward the moon even beneath six miles of stone.'},
+			glass:{faction:'The Glass Choir',name:'Wolf Glass',role:'The voice between bells',quote:'“Silence is only a song with its mouth closed.”',age:'Unknown',origin:'The Ninth Nave',known:'Predicting the ashfall',threat:'Unclear',className:'Prophet',copy:'Wolf was found inside a bell that had not been cast yet. The Choir calls her a saint. The Court calls her a weapon. She calls herself a door.',label:'File 03 / Wolf Glass',image:'assets/wolf.png',emblem:'assets/glass-choir-emblem.png',scene:'assets/glass-cathedral.png',sceneCaption:'Prophets of the silent hour',notes:'Found inside a bell that had not been cast yet.',relation:'The Choir calls her a saint. The Court calls her a weapon.',warning:'She calls herself a door.'},
+			unbound:{faction:'The Unbound',name:'Oal Takezumeki',role:'A witness with no house',quote:'“You cannot betray a thing that never owned you.”',age:'27',origin:'Red Mile',known:'Surviving the blank zone',threat:'Critical',className:'Witness',copy:'Oal walks beyond the sunline where names, memories, and shadows come loose. They return with maps drawn in a hand that is not theirs.',label:'File 04 / Oal Takezumeki',image:'assets/oal.png',emblem:'assets/unbound-emblem.png',scene:'assets/sunline.png',sceneCaption:'No banner. No forgiveness.',notes:'Walks beyond the sunline where names, memories, and shadows come loose.',relation:'No surviving relations entry.',warning:'Returns with maps drawn in a hand that is not theirs.'}
+		};
+		const updateDossier=(key)=>{const d=dossiers[key];if(!d)return;const set=(id,val)=>{const e=document.getElementById(id);if(e)e.textContent=val};set('dossier-faction',d.faction);set('dossier-name',d.name);set('dossier-role',d.role);set('dossier-quote',d.quote);set('stat-age',d.age);set('stat-origin',d.origin);set('stat-known',d.known);set('stat-threat',d.threat);set('dossier-copy',d.copy);set('portrait-label',d.label);set('portrait-class','Class: '+d.className);set('scene-title',d.faction);set('scene-caption',d.sceneCaption);set('notes',d.notes);set('relation',d.relation);set('warning',d.warning);const im=document.getElementById('dossier-image');if(im){im.src=d.image;im.alt=d.name}const em=document.getElementById('dossier-emblem');if(em)em.src=d.emblem;const sc=document.getElementById('dossier-scene');if(sc){sc.src=d.scene;sc.alt=d.faction}document.querySelectorAll('.dossier-select').forEach(b=>b.classList.toggle('active',b.dataset.select===key));};
+		document.querySelectorAll('.dossier-select').forEach(b=>b.addEventListener('click',()=>{updateDossier(b.dataset.select);history.replaceState(null,'','?faction='+encodeURIComponent(b.dataset.select));}));
+		document.querySelectorAll('.tab').forEach(tab=>tab.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));tab.classList.add('active');const panel=document.getElementById(tab.dataset.tab);if(panel)panel.classList.add('active');}));
+		const initial=new URLSearchParams(location.search).get('faction');updateDossier(dossiers[initial]?initial:'lighthouse');
+</script></body></html>
